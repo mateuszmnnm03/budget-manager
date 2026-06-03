@@ -1,0 +1,5 @@
+CREATE TABLE accounts (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    balance NUMERIC(15,2) NOT NULL DEFAULT 0
+);
