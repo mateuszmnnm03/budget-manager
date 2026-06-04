@@ -1,5 +1,7 @@
 package com.nowak.budget_manager.account;
 
+import com.nowak.budget_manager.account.dto.AccountRequest;
+import com.nowak.budget_manager.account.dto.AccountResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,11 @@ public class AccountController {
     @GetMapping("/{id}")
     public Account getAccount(@PathVariable Long id){
         return accountService.getAccount(id);
+    }
+
+    @GetMapping
+    public AccountResponse createAccount(AccountRequest request){
+        return accountService.createAccount(request);
     }
 
 }
