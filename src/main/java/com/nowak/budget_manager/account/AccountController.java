@@ -24,9 +24,14 @@ public class AccountController {
         return accountService.getAccount(id);
     }
 
-    @GetMapping
+    @PostMapping
     public AccountResponse createAccount(AccountRequest request){
         return accountService.createAccount(request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteAccount(@PathVariable Long id){
+        accountService.deleteAccount(id);
     }
 
 }
