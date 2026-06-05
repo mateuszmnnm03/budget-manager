@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 public class AccountRequest {
-    @NotBlank(message = "Podaj nazwę konta.")
+    @NotBlank(message = "Input account name.")
     @Size(max = 50)
     private String name;
 

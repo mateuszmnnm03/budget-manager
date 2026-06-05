@@ -27,7 +27,7 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TransactionType type; // a moze enum?
+    private TransactionType type;
 
     @Column(length = 100, nullable = false)
     private String category;

@@ -3,6 +3,7 @@ package com.nowak.budget_manager.account;
 import com.nowak.budget_manager.account.dto.AccountRequest;
 import com.nowak.budget_manager.account.dto.AccountResponse;
 import com.nowak.budget_manager.common.exception.AccountHasTransactionsException;
+import com.nowak.budget_manager.common.exception.NameConflictException;
 import com.nowak.budget_manager.common.exception.ResourceNotFoundException;
 import com.nowak.budget_manager.transaction.TransactionRepository;
 import com.nowak.budget_manager.transaction.TransactionService;
@@ -20,15 +21,19 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    public Account getAccount(Long id){
-        return accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found: " + id));
+    public AccountResponse getAccount(Long id){
+        Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account not found: " + id));
+        return new AccountResponse(account.getId(), account.getName(), account.getBalance());
     }
 
-    public List<Account> getAccountList() {
-        return accountRepository.findAll();
+    public List<AccountResponse> getAccountList() {
+        return accountRepository.findAll().stream().map(a -> new AccountResponse(a.getId(), a.getName(), a.getBalance())).toList();
     }
 
     public AccountResponse createAccount(AccountRequest request) {
+        if(accountRepository.existsByName(request.getName())){
+            throw new NameConflictException("Account " + request.getName() + " already exists.");
+        }
         Account account = new Account();
         account.setName(request.getName());
         account.setBalance(request.getBalance());
@@ -37,10 +42,10 @@ public class AccountService {
     }
 
     public void deleteAccount(Long id){
-        accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account " + id + " not found."));
+        Account account = accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account " + id + " not found."));
         if(transactionRepository.existsByAccount_Id(id)){
             throw new AccountHasTransactionsException("Account " + id + " has transactions.");
         }
-        accountRepository.deleteById(id);
+        accountRepository.delete(account);
     }
 }
