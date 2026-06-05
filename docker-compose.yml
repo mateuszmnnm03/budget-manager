@@ -12,6 +12,11 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d budget_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     container_name: budget-backend
@@ -21,7 +26,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_URL=jdbc:postgresql://db:5432/budget_db
       - DB_USER=user
@@ -45,7 +51,8 @@ services:
     ports:
       - "8082:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   db_data:
