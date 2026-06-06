@@ -40,7 +40,7 @@ public class TransactionService {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("category"), category));
         }
 
-        return transactionsRepository.findAll(spec).stream().map(t -> new TransactionResponse(t.getId(), t.getAmount(), t.getType(), t.getCategory(), t.getDescription(), t.getTransactionDate(), t.getAccount().getId())).toList();
+        return transactionsRepository.findAll(spec).stream().map(t -> new TransactionResponse(t.getId(), t.getAmount(), t.getType(), t.getCategory(), t.getDescription(), t.getTransactionDate(), t.getAccount().getId(), null)).toList();
     }
 
     public TransactionResponse createTransaction(TransactionRequest req){

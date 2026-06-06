@@ -5,6 +5,7 @@ import com.nowak.budget_manager.account.dto.AccountResponse;
 import com.nowak.budget_manager.common.exception.AccountHasTransactionsException;
 import com.nowak.budget_manager.common.exception.NameConflictException;
 import com.nowak.budget_manager.common.exception.ResourceNotFoundException;
+import com.nowak.budget_manager.transaction.Transaction;
 import com.nowak.budget_manager.transaction.TransactionRepository;
 import com.nowak.budget_manager.transaction.TransactionService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.boot.context.config.ConfigDataResourceNotFoundExcepti
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -47,5 +49,24 @@ public class AccountService {
             throw new AccountHasTransactionsException("Account " + id + " has transactions.");
         }
         accountRepository.delete(account);
+    }
+
+    public byte[] exportTransactionsToCsv(Long id) {
+        accountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account " + id + " not found."));
+
+        List<Transaction> transactions = transactionRepository.findByAccount_Id(id);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("id,amount,type,category,description,date\n");
+        for (Transaction t : transactions) {
+            sb.append(t.getId()).append(",")
+                    .append(t.getAmount()).append(",")
+                    .append(t.getType()).append(",")
+                    .append(t.getCategory()).append(",")
+                    .append(t.getDescription() != null ? t.getDescription() : "").append(",")
+                    .append(t.getTransactionDate()).append("\n");
+        }
+        return sb.toString().getBytes(StandardCharsets.UTF_8);
     }
 }
