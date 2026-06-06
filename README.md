@@ -1,5 +1,5 @@
 # Budget Manager
-Account management system, allowing monitoring expenses and incomes.
+Account management system allowing monitoring expenses and incomes.
 
 ## Tech Stack
 - Java
