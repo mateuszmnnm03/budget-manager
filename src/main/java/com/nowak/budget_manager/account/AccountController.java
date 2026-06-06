@@ -2,8 +2,12 @@ package com.nowak.budget_manager.account;
 
 import com.nowak.budget_manager.account.dto.AccountRequest;
 import com.nowak.budget_manager.account.dto.AccountResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +31,7 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponse createAccount(AccountRequest request){
+    public AccountResponse createAccount(@RequestBody @Valid AccountRequest request){
         return accountService.createAccount(request);
     }
 
@@ -35,6 +39,15 @@ public class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(@PathVariable Long id){
         accountService.deleteAccount(id);
+    }
+
+    @GetMapping("/{id}/transactions/export")
+    public ResponseEntity<byte[]> exportTransactions(@PathVariable Long id) {
+        byte[] csv = accountService.exportTransactionsToCsv(id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"transactions_" + id + ".csv\"")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(csv);
     }
 
 }

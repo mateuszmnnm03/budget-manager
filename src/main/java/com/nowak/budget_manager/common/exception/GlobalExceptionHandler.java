@@ -33,4 +33,11 @@ public class GlobalExceptionHandler {
         );
         return errors;
     }
+
+    @ExceptionHandler(NameConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleNameConflict(NameConflictException ex) {
+        return Map.of("error", ex.getMessage());
+    }
+
 }
