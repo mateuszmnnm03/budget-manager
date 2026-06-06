@@ -14,4 +14,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
 
     List<Transaction> findByTransactionDateBetweenAndCategory(LocalDate from, LocalDate to, String category);
     List<Transaction> findByType(TransactionType type);
+    List<Transaction> findByTypeAndCategory(TransactionType type, String category);
 }
