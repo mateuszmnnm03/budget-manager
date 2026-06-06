@@ -17,4 +17,5 @@ public class TransactionResponse {
     private String description;
     private LocalDate transactionDate;
     private Long accountId;
+    private String warning;
 }

@@ -1,5 +1,6 @@
 package com.nowak.budget_manager.limit;
 
+import com.nowak.budget_manager.account.Account;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,8 +29,9 @@ public class CategoryLimit {
     @Positive
     private BigDecimal limitAmount;
 
-    @Column(nullable = false)
-    private Long accountId;
+    @JoinColumn(nullable = false, name = "account_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Account account;
 
 
 }
