@@ -19,6 +19,7 @@ cd budget-manager
 docker compose up -d --build
 ```
 3. The application will be available at:
+- **Frontend**: `http://localhost:5173`
 - **API**: `http://localhost:8080`
 - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
 - **Adminer** (database): `http://localhost:8082`
