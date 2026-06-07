@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class AccountRequest {
     @NotBlank(message = "Input account name.")
-    @Size(max = 50)
+    @Size(max = 50, message = "Name too long.")
     private String name;
 
     private BigDecimal balance = BigDecimal.ZERO;

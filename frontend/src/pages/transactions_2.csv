@@ -1,0 +1,10 @@
+id,amount,type,category,description,date
+5,100.00,INCOME,string,string,2026-06-05
+6,1000.00,INCOME,string,string,2026-06-05
+7,10000.00,INCOME,string,string,2026-06-05
+8,10.00,EXPENSE,string,string,2026-06-05
+9,10.00,EXPENSE,string,string,2026-06-05
+10,10.00,EXPENSE,string,string,2026-06-05
+11,10.00,EXPENSE,string,string,2026-06-05
+12,10.00,EXPENSE,string,string,2026-06-05
+13,10.00,EXPENSE,string,string,2026-06-05
