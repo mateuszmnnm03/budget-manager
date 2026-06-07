@@ -3,6 +3,8 @@ package com.nowak.budget_manager;
 import com.nowak.budget_manager.account.Account;
 import com.nowak.budget_manager.account.AccountRepository;
 import com.nowak.budget_manager.common.exception.ResourceNotFoundException;
+import com.nowak.budget_manager.limit.CategoryLimit;
+import com.nowak.budget_manager.limit.CategoryLimitRepository;
 import com.nowak.budget_manager.transaction.Transaction;
 import com.nowak.budget_manager.transaction.TransactionRepository;
 import com.nowak.budget_manager.transaction.TransactionService;
@@ -17,10 +19,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +35,9 @@ public class TransactionServiceTests {
 
     @Mock
     private AccountRepository accountRepository;
+
+    @Mock
+    private CategoryLimitRepository categoryLimitRepository;
 
     @InjectMocks
     private TransactionService transactionService;
@@ -121,7 +126,7 @@ public class TransactionServiceTests {
 
         transactionService.deleteTransaction(1L);
 
-        assertEquals(new BigDecimal("200.00"), account.getBalance());
+        assertEquals(new BigDecimal("400.00"), account.getBalance());
         verify(transactionRepository).delete(transaction);
         verify(accountRepository).save(account);
     }
@@ -132,5 +137,49 @@ public class TransactionServiceTests {
 
         assertThrows(ResourceNotFoundException.class,
                 () -> transactionService.deleteTransaction(99L));
+    }
+
+    @Test
+    void createTransactionExceedingLimit(){
+        Account account = new Account();
+        account.setId(1L);
+        account.setBalance(new BigDecimal("300.00"));
+
+        TransactionRequest req = new TransactionRequest();
+        req.setAccountId(1L);
+        req.setAmount(new BigDecimal("100.00"));
+        req.setType(TransactionType.EXPENSE);
+        req.setCategory("Sport");
+        req.setTransactionDate(LocalDate.now());
+
+        Transaction existing = new Transaction();
+        existing.setAmount(new BigDecimal("100.00"));
+        existing.setType(TransactionType.EXPENSE);
+        existing.setCategory("Sport");
+        existing.setAccount(account);
+
+        when(transactionRepository.findByTypeAndCategory(TransactionType.EXPENSE, "Sport"))
+                .thenReturn(List.of(existing));
+
+        CategoryLimit limit = new CategoryLimit();
+        limit.setLimitAmount(new BigDecimal("99.00"));
+
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
+        when(transactionRepository.save(any())).thenAnswer(inv -> {
+            Transaction t = inv.getArgument(0);
+            t.setId(1L);
+            return t;
+        });
+        when(categoryLimitRepository.findByAccount_IdAndCategory(1L, "Sport"))
+                .thenReturn(Optional.of(limit));
+        when(transactionRepository.findByTypeAndCategory(TransactionType.EXPENSE, "Sport"))
+                .thenReturn(List.of(existing));
+
+        TransactionResponse res = transactionService.createTransaction(req);
+
+        assertNotNull(res.getWarning());
+
+
     }
 }
