@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -27,11 +28,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidation(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(e ->
-                errors.put(e.getField(), e.getDefaultMessage())
-        );
-        return errors;
+        String defaultMessage = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .findFirst()
+                .orElse("error");
+        return Map.of("error", defaultMessage);
     }
 
     @ExceptionHandler(NameConflictException.class)
@@ -39,5 +40,4 @@ public class GlobalExceptionHandler {
     public Map<String, String> handleNameConflict(NameConflictException ex) {
         return Map.of("error", ex.getMessage());
     }
-
 }
