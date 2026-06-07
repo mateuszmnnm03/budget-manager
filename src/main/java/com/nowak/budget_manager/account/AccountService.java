@@ -52,8 +52,7 @@ public class AccountService {
     }
 
     public byte[] exportTransactionsToCsv(Long id) {
-        accountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account " + id + " not found."));
+        accountRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Account " + id + " not found."));
 
         List<Transaction> transactions = transactionRepository.findByAccount_Id(id);
 
